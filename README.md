@@ -67,9 +67,9 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## My Information
 
-Phone number : +381 628558327
-Telegram : @MaximP9909
-Gmail : maximovic9099@gmail.com
+- Phone number : +381 628558327
+- Telegram : @MaximP9909
+- Gmail : maximovic9099@gmail.com
 
 First, Apologies very much for lack commucation.
 On Freelancer it is very dangerous for me to say about another communication app.
