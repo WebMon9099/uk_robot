@@ -64,3 +64,22 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## My Information
+
+Phone number : +381 628558327
+Telegram : @MaximP9909
+Gmail : maximovic9099@gmail.com
+
+First, Apologies very much for lack commucation.
+On Freelancer it is very dangerous for me to say about another communication app.
+My account will be suspended if I agree that
+And then I am going to change my phone number soon, maybe within 1-2 days.
+But currently you can send me through whatsapp now.
+But I prefer to Slack for business communication. I am already using the Slack with my Gmail.
+Hope you create Slack workspace and invite all your members. It would be helpful for me.
+On slack, I can commucation faster than Freelancer.
+Sorry again.
+Thanks.
+
+
