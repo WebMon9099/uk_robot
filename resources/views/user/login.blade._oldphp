@@ -1,0 +1,179 @@
+@extends('layout.app')
+@section('main_section')
+    <div class="position-relative text-white"
+        style="background-color: #0ba1a1; width: 100vw !important; overflow-x: hidden !important;">
+        <div
+            style="z-index:0.5;position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('images/home-section-1.png'); opacity: 0.15;">
+        </div>
+        <div>
+            @include('components.navbar')
+        </div>
+        <div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-10 col-md-8 col-lg-6 mt-5">
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <div class="card shadow-lg rounded-lg m-4">
+                        <div class="row g-0 align-items-center">
+                            <div class="col-12 mx-auto">
+                                <div class="card mb-0 border-0 shadow-none mb-0">
+                                    <div class="card-body p-sm-5 m-lg-2">
+                                        <div class="text-center">
+                                            <h5 class="fs-3xl">User Login</h5>
+                                            <div>
+                                                <img src="{{ asset('images/logo.png') }}" alt=""
+                                                    class="img-fluid w-25">
+                                            </div>
+                                        </div>
+                                        <div class="p-2 mt-3">
+                                            <!-- Display Typing Text -->
+                                            <h3 id="intro-text"></h3>
+                                            <h5 id="message-text"></h5>
+
+                                            <!-- Email Form -->
+                                            <form id="email-form" method="POST">
+                                                @csrf
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Email<span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="position-relative">
+                                                        <input type="email" class="form-control" id="email"
+                                                            name="email" placeholder="Enter your email" required>
+                                                        @error('email')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <button type="submit" class="btn btn-primary w-100">Submit
+                                                        Email</button>
+                                                </div>
+                                            </form>
+
+                                            <!-- Password Form (Hidden by Default) -->
+                                            <form id="password-form" action="{{ route('user.login') }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                <input type="hidden" id="email-input" name="email" value="">
+                                                <div class="mb-3">
+                                                    <label for="password-input" class="form-label">Password <span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="position-relative auth-pass-inputgroup mb-3">
+                                                        <input type="password" class="form-control pe-5 password-input"
+                                                            placeholder="Enter password" id="password-input" name="password"
+                                                            required>
+                                                        <i class="fa-regular fa-eye-slash align-middle position-absolute end-0 top-0 text-muted password-icon"
+                                                            id="password-addon"
+                                                            style="right: 100px; top: 50%; transform: translate(-50%, 50%); cursor: pointer;"></i>
+                                                        @error('password')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <button type="submit" class="btn btn-primary w-100">Submit
+                                                        Password</button>
+                                                </div>
+
+                                            </form>
+                                            <div class="text-center mt-5">
+                                                <p class="mt-3">Forgot your password? <a
+                                                        href="{{ route('user.forgetPasswordView') }}"
+                                                        class="fw-semibold text-secondary text-decoration-underline">Forget
+                                                        password</a></p>
+                                                <p class="mt-3">Don't have Account? <a href="{{ route('mutiRegsiter') }}"
+                                                        class="fw-semibold text-secondary text-decoration-underline">SignUp
+                                                    </a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @include('components.news-letter')
+    @include('components.contact-us')
+@endsection
+
+@section('customJs')
+    <script>
+        // Typing effect function
+        function typeText(element, text, speed) {
+            let index = 0;
+
+            function type() {
+                if (index < text.length) {
+                    element.text(element.text() + text.charAt(index));
+                    index++;
+                    setTimeout(type, speed);
+                } else {
+                    // After finishing typing, wait a moment and restart
+                    setTimeout(() => {
+                        index = 0; // Reset index to start from the beginning
+                        element.text(''); // Clear text content before starting again
+                        type(); // Start typing again
+                    }, 1000); // Delay before restarting (1 second)
+                }
+            }
+
+            type(); // Start typing
+        }
+
+        // Variables for intro text and prompt text
+        var introText = "Hello, Please enter your registered email for login.";
+
+        // Call typeText function on page load
+        $(document).ready(function() {
+            typeText($('#intro-text'), introText, 50);
+        });
+
+        document.getElementById('email-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+
+            // Simulate a robot response
+            const messageText = document.getElementById('message-text');
+            messageText.textContent =
+                `Thank you : ${email}. Please enter your password to login.`;
+
+            // Hide email form and show password form
+            document.getElementById('email-form').style.display = 'none';
+            document.getElementById('intro-text').style.display = 'none'; // Hide intro text
+            document.getElementById('password-form').style.display = 'block';
+
+            // Populate hidden email field in the password form
+            document.getElementById('email-input').value = email;
+        });
+
+        // Toggle password visibility
+        document.getElementById('password-addon').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password-input');
+            const icon = this;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    </script>
+@endsection
