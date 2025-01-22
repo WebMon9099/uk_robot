@@ -1,6 +1,6 @@
 @extends('admin.layout.master')
 @section('main_section')
-    <div>
+    <div class="container-xxl flex-grow-1 container-p-y">
         @if ($errors->any())
             @foreach ($errors->all() as $error)
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -18,27 +18,28 @@
                         Add User</button>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="Datatable">
-                        <thead>
-                            <tr class="bg-light">
-                                <th>Sno</th>
-                                <th>User Name</th>
-                                <th>Email</th>
-                                <th>User Type</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($user as $user)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    @php
+            
+            <div class="table-responsive text-nowrap card-body">
+                <table class="table table-hover table-border-bottom-0" id="Datatable">
+                    <thead>
+                        <tr class="bg-light">
+                            <th>Sno</th>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>User Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($user as $user)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                @php
                                     $userTypes = [
+                                        1 => 'admin',
                                         2 => 'User',
                                         3 => 'Journalist',
                                         4 => 'Blogger',
@@ -50,19 +51,20 @@
                                 <td class="{{ $user->status == 1 ? 'text-success' : 'text-danger' }}">
                                     {{ $user->status == 1 ? 'Active' : 'Inactive' }}
                                 </td>
-                                    <td>
-                                        <button class="btn btn-outline-primary btn-sm edit-user-btn"
-                                            data-id="{{ $user->id }}"><i class="fa fa-edit m-0"></i></button>
-                                        <a href="{{ route('user.destroy', ['id' => $user->id]) }}"
-                                            class="btn btn-outline-danger btn-sm"><i class="fa fa-trash m-0"></i></a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
 
-                </div>
+                                <td>
+                                    <button class="btn rounded-pill btn-primary btn-sm edit-user-btn"
+                                        data-id="{{ $user->id }}"><i class="fa fa-edit m-0"></i></button>
+                                    <a href="{{ route('user.destroy', ['id' => $user->id]) }}"
+                                        class="btn rounded-pill btn-danger btn-sm"><i class="fa fa-trash m-0"></i></a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
             </div>
+            
         </div>
     </div>
     <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -130,11 +132,14 @@
                             <div class="col-md-12 mb-3">
                                 <label for="user_role" class="form-label">User Role</label>
                                 <select name="user_role" id="user_role" class="form-control">
+                                    @if (Auth::user()->user_type == 0) <!-- Check if logged-in user is Super Admin -->
+                                        <option value="1">Admin</option>
+                                    @endif
                                     <option value="2">User</option>
                                     <option value="3">Journalist </option>
-                                    <option value="4">Blogger</option>
-                                    <option value="5">Social Media Influencer</option>
-                                    <option value="6">Local Writer</option>
+                                    <option value="4"> Blogger</option>
+                                    <option value="5"> Social Media Influencer</option>
+                                    <option value="6"> Local Writer</option>
                                 </select>
                             </div>
                         </div>
@@ -203,51 +208,55 @@
                 toggleIcon.classList.add('bi-eye-slash');
             }
         }
-        
-    $("#addUserForm").submit(function(e) {
-        e.preventDefault(); // Prevent default form submission
-        $.ajax({
-            url: '{{ route("user.store") }}', // Replace with your store route
-            type: 'post',
-            dataType: 'json',
-            data: $("#addUserForm").serializeArray(),
-            success: function(response) {
-                if (response.error) {
-                    var error = response.error;
 
-                    // Handle name field error
-                    if (error.name) {
-                        $("#name").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(error.name);
+        $("#addUserForm").submit(function(e) {
+            e.preventDefault(); // Prevent default form submission
+            $.ajax({
+                url: '{{ route('user.store') }}', // Replace with your store route
+                type: 'post',
+                dataType: 'json',
+                data: $("#addUserForm").serializeArray(),
+                success: function(response) {
+                    if (response.error) {
+                        var error = response.error;
+
+                        // Handle name field error
+                        if (error.name) {
+                            $("#name").addClass('is-invalid').siblings('p').addClass('invalid-feedback')
+                                .html(error.name);
+                        } else {
+                            $("#name").removeClass('is-invalid').siblings('p').removeClass(
+                                'invalid-feedback').html('');
+                        }
+
+                        // Handle email field error
+                        if (error.email) {
+                            $("#email").addClass('is-invalid').siblings('p').addClass(
+                                'invalid-feedback').html(error.email);
+                        } else {
+                            $("#email").removeClass('is-invalid').siblings('p').removeClass(
+                                'invalid-feedback').html('');
+                        }
+
+                        // Handle password field error
+                        if (error.password) {
+                            $("#password").addClass('is-invalid').siblings('p').addClass(
+                                'invalid-feedback').html(error.password);
+                        } else {
+                            $("#password").removeClass('is-invalid').siblings('p').removeClass(
+                                'invalid-feedback').html('');
+                        }
+
                     } else {
-                        $("#name").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html('');
+                        // If no errors, redirect or show success message
+                        window.location.href = "{{ route('user.index') }}";
                     }
-
-                    // Handle email field error
-                    if (error.email) {
-                        $("#email").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(error.email);
-                    } else {
-                        $("#email").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html('');
-                    }
-
-                    // Handle password field error
-                    if (error.password) {
-                        $("#password").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(error.password);
-                    } else {
-                        $("#password").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html('');
-                    }
-
-                } else {
-                    // If no errors, redirect or show success message
-                    window.location.href = "{{ route('user.index') }}";
+                },
+                error: function(xhr) {
+                    console.error("Error occurred: ", xhr.responseJSON);
                 }
-            },
-            error: function(xhr) {
-                console.error("Error occurred: ", xhr.responseJSON);
-            }
+            });
         });
-    });
-
-
     </script>
 
 @endsection

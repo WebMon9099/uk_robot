@@ -132,7 +132,7 @@ class AuthController extends Controller
                 session()->forget('cart');
 
             }
-            if ($user->user_type == 1) {
+            if ($user->user_type == 1 || $user->user_type == 0) {
                 // If user type is 1, redirect to admin dashboard
                 return response()->json(['success' => 'Admin logged in successfully.', 'redirect' => route('dashboard')]);
             } elseif ($user->user_type == 2) {
