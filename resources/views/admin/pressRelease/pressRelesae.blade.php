@@ -204,7 +204,6 @@
         </div>
     </div>
 
-
     <script src="{{ asset('assets/tinymce/js/tinymce/tinymce.min.js') }}"></script>
     <script>
         tinymce.init({
@@ -441,7 +440,5 @@
             });
         });
     </script>
-
-
 
 @endsection

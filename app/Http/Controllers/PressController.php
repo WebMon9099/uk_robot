@@ -47,7 +47,7 @@ class PressController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'date' => 'required|date',
-            'blog_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240', // Validation for multiple images
+            'blog_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240', // Validation for multiple images
             'published_by' => 'nullable|string|max:255',
             'written_by' => 'nullable',
             'press_link' => 'nullable|url',
@@ -82,7 +82,7 @@ class PressController extends Controller
     
         // Get the logged-in user's ID
         $userId = auth()->id();
-    
+     
         // Create the blog entry
         $blog = Blog::create([
             'title' => $validatedData['title'],
@@ -92,7 +92,8 @@ class PressController extends Controller
             'description' => $request->description,
             'press_link' => $validatedData['press_link'],
             'published_by' => $validatedData['published_by'],
-            'written_by' => $validatedData['written_by'],
+            'written_by' => $request->input('written_by'),
+            
             'user_id' => $userId,
             'blog_type' => $blogType,
             'social_links' => $socialLinks, // Use the retrieved or default value
@@ -100,10 +101,20 @@ class PressController extends Controller
     
      
         // Handle blog image upload
-        if ($request->hasFile('blog_images')) { // Updated to handle multiple images
-            foreach ($request->file('blog_images') as $imageFile) {
-                $imagename = $imageFile->store('blogimages', 'public'); // Save to storage/app/public/blogimages
-                $blog->images()->create(['imagename' => $imagename]); // Create a new image record for each file
+        if ($request->hasFile('blog_image')) {
+            $images = $request->file('blog_image');
+
+            // Normalize input to an array, even for a single file
+            if (!is_array($images)) {
+                $images = [$images];
+            }
+
+            foreach ($images as $imageFile) {
+                // Store each file in the public storage
+                $imagename = $imageFile->store('blogimages', 'public'); 
+                
+                // Create a record in the 'blog_images' table
+                $blog->images()->create(['imagename' => $imagename]); 
             }
         }
     
@@ -113,77 +124,7 @@ class PressController extends Controller
         ]);
     }
     
-    // public function store(Request $request)
-    // {
-    //     $categories = BlogCategory::all();
-    //     // Validate the form fields
-    //     $validator = Validator::make($request->all(), [
-    //         'title' => 'required|string|max:255',
-    //         'date' => 'required|date',
-    //         'blog_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
-    //         'published_by' => 'nullable',
-    //         'press_link' => 'nullable|url',
-    //         'category_name' => 'required_without:new_category|string|in:' . implode(',', array_merge($categories->pluck('category')->toArray(), ['other'])),
-    //         'new_category' => 'required_if:category_name,other|nullable|string|max:255',
-    //         'social_links.tiktok' => 'nullable|url',
-    //         'social_links.instagram' => 'nullable|url',
-    //         'social_links.linkedin' => 'nullable|url',
-    //         'social_links.facebook' => 'nullable|url',
-    //         'social_links.twitter' => 'nullable|url', 
-    //     ], [
-    //         'category_name.required_without' => 'Please select a category or enter a new category.',
-    //         'new_category.required_if' => 'Please specify a new category when "Other" is selected.'
-    //     ]);
-
-    //     // Check if validation fails
-    //     if ($validator->fails()) {
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'errors' => $validator->errors()
-    //         ], 422);  // 422 Unprocessable Entity
-    //     }
-
-    //     // Determine the blog type based on the URL
-    //     $currentUrl = $request->url();
-    //     $socialLinks = $request->get('social_links', []);
-    //     $blogType = str_contains($currentUrl, 'press') ? 'article' : 'blog';
-
-    //     // Get the logged-in user's ID
-    //     $userId = auth()->id();
-    //     // Proceed with the rest of your code if validation passes
-    //     $validatedData = $validator->validated();
-    //     $categoryName = $validatedData['category_name'] === 'other' ? $validatedData['new_category'] : $validatedData['category_name'];
-    //     BlogCategory::firstOrCreate(['category' => $categoryName]);
-
-    //     $blog = Blog::create([
-    //         'title' => $validatedData['title'],
-    //         'date' => $validatedData['date'],
-    //         'slug' => $validatedData['title'],  // Assuming 'slug' is based on the title
-    //         'category' => $categoryName,
-    //         'description' => $request->description,
-    //         'press_link' => $request->press_link,
-    //         'published_by' => $request->published_by,
-    //         'user_id' => $userId, // Add the user_id
-    //         'blog_type' => $blogType, // Add the blog_type
-    //         'social_links' => $socialLinks,
-    //     ]);
-
-    //     // Handle the image upload if the file is present
-    //     if ($request->hasFile('blog_images')) { // Updated to handle multiple images
-    //         foreach ($request->file('blog_images') as $imageFile) {
-    //             $imagename = $imageFile->store('blogimages', 'public'); // Save to storage/app/public/blogimages
-    //             $blog->images()->create(['imagename' => $imagename]); // Create a new image record for each file
-    //         }
-    //     }
-    
-
-    //     // Return success response for AJAX
-    //     return response()->json([
-    //         'success' => true,
-    //         'redirect_url' => route('press.index')
-    //     ]);
-    // }
+   
     public function update(Request $request, $id)
     {
         // dd($request->all());
@@ -221,7 +162,7 @@ class PressController extends Controller
                 'description' => $validatedData['description'] ?? '', // Store empty string if description is null
                 'category' => $category, 
                 'published_by'=>$validatedData['published_by'],
-                'written_by'=>$validatedData['written_by'],
+                'written_by' => $request->input('written_by'),
                 'press_link'=>$validatedData['press_link'],
                 /* 'social_links' => $socialLinks,  */
                 

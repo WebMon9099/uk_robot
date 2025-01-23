@@ -51,7 +51,7 @@ class PressReleaseController extends Controller
 
             return response()->json([
                 'success' => false,
-                'errors' => ['files' => ['At least one file is required.']],
+                'errors' => ['files' => ['At least one ganesh file is required.']],
             ], 422);
         }
 

@@ -17,7 +17,7 @@ class BlogController extends Controller
         // Fetch all blogs with related images (if any)
         $userType = auth()->user()->user_type;
         $blogs = Blog::with('images')
-        ->when($userType != 1, function ($query) {
+        ->when(!in_array($userType, [1, 0]), function ($query) {
             // Restrict to logged-in user's blogs if user_type is not 1
             $query->where('user_id', auth()->id());
         })

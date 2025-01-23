@@ -17,51 +17,49 @@
             </div>
         </div>
         <div class="table-responsive card-body">
-
             <table class="table table-hover table-border-bottom-0" id="Datatable">
         
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>File Type</th>
-                    <th>Preview</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($files as $file)
+                <thead>
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ strtoupper($file->file_type) }}</td>
-                        <td>
-                            @if ($file->file_type === 'image')
-                                <img src="{{ asset('storage/' . $file->file_path) }}" alt="Thumbnail" style="width: 100px; height: 100px;">
-                            @elseif ($file->file_type === 'pdf')
-                                <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank">
-                                    <img src="{{ asset('images/PDF_file_icon.png') }}" alt="PDF Icon" style="width: 50px; height: 50px;">
-                                </a>
-                            @else
-                                <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank">Preview</a>
-                            @endif
-                        </td>
-                        <td>
-                            <button class="btn btn-danger delete-file-btn" type="button"
-                                    data-id="{{ $file->id }}" 
-                                    data-file-name="{{ basename($file->file_path) }}">
-                                <i class="fa fa-trash"></i> Delete
-                            </button>
-                        </td>
+                        <th>#</th>
+                        <th>File Type</th>
+                        <th>Preview</th>
+                        <th>Actions</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center">No Files Found</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    <div>    
-     
+                </thead>
+                <tbody>
+                    @forelse ($files as $file)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ strtoupper($file->file_type) }}</td>
+                            <td>
+                                @if ($file->file_type === 'image')
+                                    <img src="{{ asset('storage/' . $file->file_path) }}" alt="Thumbnail" style="width: 100px; height: 100px;">
+                                @elseif ($file->file_type === 'pdf')
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank">
+                                        <img src="{{ asset('images/PDF_file_icon.png') }}" alt="PDF Icon" style="width: 50px; height: 50px;">
+                                    </a>
+                                @else
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank">Preview</a>
+                                @endif
+                            </td>
+                            <td>
+                                <button class="btn btn-danger delete-file-btn" type="button"
+                                        data-id="{{ $file->id }}" 
+                                        data-file-name="{{ basename($file->file_path) }}">
+                                    <i class="fa fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center">No Files Found</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>    
 </div>
 
 <!-- Confirmation Modal -->
@@ -179,47 +177,47 @@
 </style>
 
 <script>
-$(document).on('click', '.delete-file-btn', function() {
-    var fileId = $(this).data('id');
-    var fileName = $(this).data('file-name'); // Get the file name
+    $(document).on('click', '.delete-file-btn', function() {
+        var fileId = $(this).data('id');
+        var fileName = $(this).data('file-name'); // Get the file name
 
-    // Set the file name in the confirmation modal
-    $('#fileName').text(fileName);
+        // Set the file name in the confirmation modal
+        $('#fileName').text(fileName);
 
-    // Show the confirmation modal
-    $('#confirmDeleteModal').modal('show');
+        // Show the confirmation modal
+        $('#confirmDeleteModal').modal('show');
 
-    // When the user clicks 'Delete', perform the deletion
-    $('#confirmDeleteBtn').on('click', function() {
-        $.ajax({
-            url: '{{ route('press.file.delete') }}',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                file_id: fileId
-            },
-            success: function(response) {
-                if (response.success) {
-                    $('#successMessage').text(response.message);
-                    $('#successModal').modal('show');
-                    setTimeout(function() {
-                        location.reload(); 
-                    }, 2000); 
-                } else {
-                   
-                    $('#errorMessage').text('Error: ' + response.message);
+        // When the user clicks 'Delete', perform the deletion
+        $('#confirmDeleteBtn').on('click', function() {
+            $.ajax({
+                url: '{{ route('press.file.delete') }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    file_id: fileId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#successMessage').text(response.message);
+                        $('#successModal').modal('show');
+                        setTimeout(function() {
+                            location.reload(); 
+                        }, 2000); 
+                    } else {
+                    
+                        $('#errorMessage').text('Error: ' + response.message);
+                        $('#errorModal').modal('show');
+                    }
+                },
+                error: function(xhr) {
+                    // Display error modal
+                    $('#errorMessage').text('An error occurred while deleting the file.');
                     $('#errorModal').modal('show');
                 }
-            },
-            error: function(xhr) {
-                // Display error modal
-                $('#errorMessage').text('An error occurred while deleting the file.');
-                $('#errorModal').modal('show');
-            }
+            });
+            // Close the confirmation modal
+            $('#confirmDeleteModal').modal('hide');
         });
-        // Close the confirmation modal
-        $('#confirmDeleteModal').modal('hide');
     });
-});
 </script>
 @endsection

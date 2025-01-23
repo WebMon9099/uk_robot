@@ -65,7 +65,7 @@ class AuthController extends Controller
            'password' => bcrypt($request->input('password')),
            'status' => '0', // Default status to 0
        ]);
-       $adminEmail = 'test@gmail.com'; // Replace with your admin email
+       $adminEmail = 'ganeshgp1015@gmail.com'; // Replace with your admin email
        Mail::to($adminEmail)->send(new AdminUserRegisteredNotification($user));
   
        return redirect()->route('user.login');

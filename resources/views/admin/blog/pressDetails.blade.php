@@ -35,12 +35,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($noBlogs)
-                            <tr >
-                                <td colspan="7" class="text-center">No Press/Pr available</td>
-                            </tr>
-                            @else
-                            @foreach ($blogs as $blog)
+                            
+                            @forelse ($blogs as $blog)
+                            
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $blog->title }}</td>
@@ -83,10 +80,14 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr >
+                                <td colspan="7" class="text-center">No Press/Pr available</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                    @endif
+                    
                 </div>
           
         </div>
@@ -159,8 +160,6 @@
     </div>
 </div>
 
-
-
 <!-- Edit Blog Modal -->
 <div id="editBlogModal" class="modal fade" tabindex="-1" aria-labelledby="editBlogModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -231,31 +230,10 @@
         </div>
     </div>
 </div>
-<script src="{{ asset('assets/tinymce/js/tinymce/tinymce.min.js') }}"></script>
-<script>
-    tinymce.init({
-        selector: 'textarea#description',
-        width: '100%',
-        height: 300,
-        plugins: [
-            'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 
-            'pagebreak', 'searchreplace', 'wordcount', 'visualblocks', 'code', 'fullscreen', 
-            'insertdatetime', 'media', 'table', 'emoticons', 'template', 'codesample'
-        ],
-        toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify |' +
-                    'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
-                    'forecolor backcolor emoticons',
-        menu: {
-            favs: {title: 'menu', items: 'code visualaid | searchreplace | emoticons'}
-        },
-        menubar: 'favs file edit view insert format tools table',
-        content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }'
-    });
- 
-   // TinyMCE initialization function for both editors
-    function initializeTinyMCE(selector) {
+    <script src="{{ asset('assets/tinymce/js/tinymce/tinymce.min.js') }}"></script>
+    <script>
         tinymce.init({
-            selector: selector,
+            selector: 'textarea#description',
             width: '100%',
             height: 300,
             plugins: [
@@ -264,19 +242,40 @@
                 'insertdatetime', 'media', 'table', 'emoticons', 'template', 'codesample'
             ],
             toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify |' +
-                    'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
-                    'forecolor backcolor emoticons',
+                        'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
+                        'forecolor backcolor emoticons',
             menu: {
                 favs: {title: 'menu', items: 'code visualaid | searchreplace | emoticons'}
             },
             menubar: 'favs file edit view insert format tools table',
             content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }'
         });
-    }
+    
+        // TinyMCE initialization function for both editors
+        function initializeTinyMCE(selector) {
+            tinymce.init({
+                selector: selector,
+                width: '100%',
+                height: 300,
+                plugins: [
+                    'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 
+                    'pagebreak', 'searchreplace', 'wordcount', 'visualblocks', 'code', 'fullscreen', 
+                    'insertdatetime', 'media', 'table', 'emoticons', 'template', 'codesample'
+                ],
+                toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify |' +
+                        'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
+                        'forecolor backcolor emoticons',
+                menu: {
+                    favs: {title: 'menu', items: 'code visualaid | searchreplace | emoticons'}
+                },
+                menubar: 'favs file edit view insert format tools table',
+                content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }'
+            });
+        }
 
-    // Initialize TinyMCE for the 'description' editor only once on page load
-    initializeTinyMCE('textarea#description');
-</script>
+        // Initialize TinyMCE for the 'description' editor only once on page load
+        initializeTinyMCE('textarea#description');
+    </script>
 
     <script>
         // Listen for changes to the category dropdown
@@ -325,20 +324,20 @@
                     }
     
                      // Set the form's action URL using the blog ID
-            const editBlogForm = document.getElementById('editBlogForm');
-            editBlogForm.action = `{{ route('press.update', '') }}/${blogId}`;
+                    const editBlogForm = document.getElementById('editBlogForm');
+                    editBlogForm.action = `{{ route('press.update', '') }}/${blogId}`;
 
-            
-                // Display current image or placeholder
-                const currentBlogImage = document.getElementById('currentBlogImage');
-                const currentImageName = document.getElementById('currentImageName');
-                if (imageName) {
-                    currentBlogImage.src = `{{ asset('storage') }}/${imageName}`;
-                   // currentImageName.textContent = imageName;
-                } else {
-                    currentBlogImage.src = ""; // Blank or placeholder
-                    currentImageName.textContent = "No Image Available";
-                }
+                
+                    // Display current image or placeholder
+                    const currentBlogImage = document.getElementById('currentBlogImage');
+                    const currentImageName = document.getElementById('currentImageName');
+                    if (imageName) {
+                        currentBlogImage.src = `{{ asset('storage') }}/${imageName}`;
+                    // currentImageName.textContent = imageName;
+                    } else {
+                        currentBlogImage.src = ""; // Blank or placeholder
+                        // currentImageName.textContent = "No Image Available";
+                    }
                     // Show the modal
                     if (tinymce.get('editDescription')) {
                         tinymce.get('editDescription').remove();
@@ -348,12 +347,12 @@
                     initializeTinyMCE('textarea#editDescription');        
         
                     // Wait for TinyMCE to be initialized, then set the content
-            const checkTinyMCEReady = setInterval(() => {
-                if (tinymce.get('editDescription')) {
-                    clearInterval(checkTinyMCEReady);  // Stop checking once TinyMCE is ready
-                    tinymce.get('editDescription').setContent(description); // Set the content
-                }
-            }, 100); // Check every 100ms if TinyMCE is ready
+                    const checkTinyMCEReady = setInterval(() => {
+                        if (tinymce.get('editDescription')) {
+                            clearInterval(checkTinyMCEReady);  // Stop checking once TinyMCE is ready
+                            tinymce.get('editDescription').setContent(description); // Set the content
+                        }
+                    }, 100); // Check every 100ms if TinyMCE is ready
         
                     // Show the modal
                     editBlogModal.show();
@@ -364,70 +363,70 @@
     </script>
 
 
-<script>
-    $(document).ready(function() {
-        // Open the modal if validation errors exist
-        $('#addBlogForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent normal form submission
-            
-            var formData = new FormData(this); // Get form data
-
-            // Clear previous error messages
-            $('.invalid-feedback').text('');
-            $('.form-control').removeClass('is-invalid');
-
-            $.ajax({
-                url: '{{ route('press.store') }}', // Replace with the correct route
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    // Success message or redirection
+    <script>
+        $(document).ready(function() {
+            // Open the modal if validation errors exist
+            $('#addBlogForm').on('submit', function(e) {
+                e.preventDefault(); // Prevent normal form submission
                 
-                    if (response.success) {
-                            $('#addBlogModal').modal('hide'); // Close the modal
-                            toastr.success('Press added successfully!');
-                            window.location.href = response.redirect_url; //
-                    }
-                },
-                error: function(xhr) {
-                    // If validation fails, show errors
-                    if (xhr.status === 422) {  // Validation error
-                        var errors = xhr.responseJSON.errors;
+                var formData = new FormData(this); // Get form data
 
-                        // Iterate through the errors and display them
-                        for (var field in errors) {
-                            // Handle category_name errors
-                            if (field === 'category_name') {
-                                $('#' + field).addClass('is-invalid');  // Add invalid class to category_name
-                                $('#' + field + '-error').text(errors[field][0]);
-                            }
+                // Clear previous error messages
+                $('.invalid-feedback').text('');
+                $('.form-control').removeClass('is-invalid');
 
-                            // Handle new_category errors
-                            if (field === 'new_category') {
-                                $('#' + field).addClass('is-invalid');  // Add invalid class to new_category
-                                $('#' + field + '-error').text(errors[field][0]);
+                $.ajax({
+                    url: '{{ route('pressc.store') }}', // Replace with the correct route
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        // Success message or redirection
+                    
+                        if (response.success) {
+                                $('#addBlogModal').modal('hide'); // Close the modal
+                                toastr.success('Press added successfully!');
+                                window.location.href = response.redirect_url; //
+                        }
+                    },
+                    error: function(xhr) {
+                        // If validation fails, show errors
+                        if (xhr.status === 422) {  // Validation error
+                            var errors = xhr.responseJSON.errors;
 
-                                // If 'Other' is selected, show the input field for the new category
-                                if ($('#category').val() === 'other') {
-                                    $('#newCategoryContainer').show();  // Show the new category input field
+                            // Iterate through the errors and display them
+                            for (var field in errors) {
+                                // Handle category_name errors
+                                if (field === 'category_name') {
+                                    $('#' + field).addClass('is-invalid');  // Add invalid class to category_name
+                                    $('#' + field + '-error').text(errors[field][0]);
                                 }
-                            }
 
-                            // Handle blog_image errors
-                            if (field === 'blog_image') {
-                                $('#' + field).addClass('is-invalid');  // Add invalid class to blog_image
-                                $('#' + field + '-error').text(errors[field][0]);
+                                // Handle new_category errors
+                                if (field === 'new_category') {
+                                    $('#' + field).addClass('is-invalid');  // Add invalid class to new_category
+                                    $('#' + field + '-error').text(errors[field][0]);
+
+                                    // If 'Other' is selected, show the input field for the new category
+                                    if ($('#category').val() === 'other') {
+                                        $('#newCategoryContainer').show();  // Show the new category input field
+                                    }
+                                }
+
+                                // Handle blog_image errors
+                                if (field === 'blog_image') {
+                                    $('#' + field).addClass('is-invalid');  // Add invalid class to blog_image
+                                    $('#' + field + '-error').text(errors[field][0]);
+                                }
                             }
                         }
                     }
-                }
+                });
             });
         });
-    });
 
-</script>
+    </script>
 
 
 
