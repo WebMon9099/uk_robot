@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Usamamuneerchaudhary\Commentify\Traits\Commentable;
 
 class Blog extends Model
 {
     use HasFactory;
-
+    use Commentable;
     use sluggable;
 
     public function sluggable():array{
@@ -38,5 +39,9 @@ class Blog extends Model
     public function images()
     {
         return $this->hasMany(BlogImage::class);
+    }
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }

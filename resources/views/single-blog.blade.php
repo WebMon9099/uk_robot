@@ -10,33 +10,152 @@
 
 @section('main_section')
 <style>
+    / Styling for the share button icon /
+.share-icon {
+    cursor: pointer;
+}
+
+/ Style for the share buttons container /
+.share-buttons-container {
+    display: none; / Initially hidden /
+    padding: 0px 10px 0 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    background-color: #ffffff;
+}
+
+/ Styling for share icon links /
+.share-icon i {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.share-icon:hover i {
+    transform: scale(1.2); / Grow on hover /
+}
+
+/ Horizontal layout for share icons /
+.share-buttons-container .row {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.share-buttons-container .col-1 {
+    padding: 5px;
+}
+    .login-prompt {
+    display: inline-block;
+    background: #ff4d4d; /* Red background for visibility */
+    color: #fff; /* White text */
+    font-size: 14px; /* Adjust font size */
+    padding: 5px 10px; /* Padding for better spacing */
+    border-radius: 5px; /* Rounded corners */
+    position: absolute;
+    margin-left: 10px; /* Space from the heart button */
+    white-space: nowrap; /* Prevent text from wrapping */
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+    .share-container {
+        display: none; /* Initially hidden */
+        position: absolute;
+        bottom: 50px; /* Adjust for positioning above button */
+        left: 0;
+        background: white;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Shadow effect */
+        border-radius: 10px;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    .share-links {
+        display: flex;
+        flex-direction: row; /* Vertical alignment */
+        gap: 10px;
+        
+    }
+
+    .share-links a {
+        text-decoration: none;
+        display: flex;
+        justify-content: center; /* Center icons */
+        color: #333;
+        font-size: 20px; /* Adjust icon size */
+        padding: 8px;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+
+    .share-links a:hover {
+        background: #f5f5f5;
+        border: none;
+    }
+
+    .share-icon{
+        padding-right: 40px;
+        margin-left: 10px;
+    }
+
+    .hide-button{
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        padding-right: 20px;
+        padding-left: 20px;
+        margin-bottom: 0px;
+    }
+
+    .btn-like {
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Adjust spacing between heart and count */
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 20px;
+        padding-right: 0px;
+    }
+                                        
+    .like-count {
+        font-weight: bold !important;
+    }
+
+    .comment-user {
+        width: 6% !important;
+        height: auto !important;
+        border-radius: 15px !important;
+        margin-bottom: 5px !important;
+        object-fit: cover !important;
+        background: #125259
+    }
+    .comment-btn{
+        background: #125259 !important;
+        border: none !important;
+        padding: 5px 25px 5px 25px !important;
+        border-radius: 5px !important;
+        color: #ffF !important;
+    }
     @media print {
         body {
             background-color: red !important;
-            /* To see if styles are applied */
         }
 
         .row>* {
             padding-right: 0 !important;
-            /* Remove padding during print */
             padding-left: 0 !important;
-            /* Remove padding during print */
-            /* margin-top: 0 !important;    Optional: Remove margin during print */
+
         }
 
         .container,
         .container-sm {
             max-width: none !important;
-            /* Remove max-width during print */
             width: 85% !important;
-            /* Ensure full-page width */
         }
 
     }
 
     body {
         background-color: #f7f7f7;
-        /* Lighter background for the page */
         font-family: 'Arial', sans-serif;
     }
 
@@ -55,7 +174,6 @@
     }
 
     .single-blog-container {
-        /* border-radius: 20px; */
         padding: 20px;
         background-color: #fff;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px 0px;
@@ -163,13 +281,11 @@
 
     .custom-btn:hover {
         background-color: #d21f66;
-        /* Slightly darker shade for hover effect */
         transform: scale(1.05);
     }
 
     .profile-name {
         font-size: 0.9rem;
-        /* Smaller font size */
         font-weight: 500;
         margin: 0;
         color: #333;
@@ -177,7 +293,6 @@
 
     .pulished_by {
         font-size: 1rem;
-        /* Smaller font size */
         font-weight: 400;
         color: #125259;
     }
@@ -185,26 +300,19 @@
     .blog-item {
         display: flex;
         align-items: center;
-        /* Align content vertically in the center */
         gap: 1rem;
-        /* Space between image and details */
     }
 
     .thumbnail-container {
         flex-shrink: 0;
-        /* Prevents image from shrinking */
     }
 
     .thumbnail {
         margin: 10px;
         width: 100px;
-        /* Fixed width */
         height: 100px;
-        /* Fixed height */
         object-fit: cover;
-        /* Ensures images maintain aspect ratio and fill the area */
         border-radius: 5px;
-        /* Optional: rounded corners */
     }
 
     .blog-details {
@@ -242,19 +350,9 @@
 
     .blog-image {
         width: 100%;
-        /* Make the image take up the full width */
         height: 200px;
-        /* Set a fixed height */
         object-fit: cover;
-        /* Ensure the image covers the area without stretching */
         object-position: center;
-    }
-
-    .card-profile {
-        /* display: flex;
-                                                            align-items: center;
-                                                            margin-top: 1rem; */
-        /* Reduced margin */
     }
 
     .card-profile .profile-img {
@@ -436,8 +534,6 @@
                     <div class="col-md-8">
                         <div class="blog-description">
                             {!! $section2 !!}
-                        </div>
-                    </div>
                     <div class="col-md-4">
                         @if($hasImage && $blog->images->count() > 1)
                             <img src="{{ asset('storage/' . $blog->images[1]->imagename) }}" alt="Blog Image"
@@ -518,77 +614,79 @@
                                     onclick="printBlog()">Print</button>
 
                             </div>
+
                             <div class="d-flex justify-content-start align-items-center mb-3">
                                 <div class="share-buttons d-flex">
-                                    <!-- Facebook -->
-                                    <div class="col-2">
-                                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-facebook fa-lg" style="color: #000000"></i>
-                                        </a>
+                                    <div class="col-3" style="margin-top: -7px;">
+                                        <div class="post-actions">
+                                            @if(auth()->check())
+                                                <!-- Logged-in user can like/unlike -->
+                                                <button class="btn btn-like" id="likeButton-{{ $blog->id }}" onclick="likePost({{ $blog->id }})">
+                                                    ❤️ 
+                                                    <span id="likeCount-{{ $blog->id }}" class="like-count">{{ $blog->likes->count() }}</span>
+                                                </button>
+                                            @else
+                                                <!-- Non-logged-in user sees an unliked heart with hover message -->
+                                                <button class="btn btn-like" id="likeButton-{{ $blog->id }}" onclick="showLoginPrompt({{ $blog->id }})">
+                                                    🤍 
+                                                    <span id="likeCount-{{ $blog->id }}" class="like-count">{{ $blog->likes->count() }}</span>
+                                                </button>
+                                                <span id="loginPrompt-{{ $blog->id }}" class="login-prompt" style="display:none;">Please login to like</span>
+                                            @endif
+                                        </div>
                                     </div>
-
-                                    <!-- Twitter -->
                                     <div class="col-2">
-                                        <a href="https://twitter.com/intent/tweet?text={{ urlencode($shareTitle) }}&url={{ urlencode($shareUrl) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-twitter fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- LinkedIn -->
-                                    <div class="col-2">
-                                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($shareUrl) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-linkedin fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- WhatsApp -->
-                                    <div class="col-2">
-                                        <a href="https://api.whatsapp.com/send?text={{ urlencode($shareMessage . ' ' . $shareUrl) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-whatsapp fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- Telegram -->
-                                    <div class="col-2">
-                                        <a href="https://telegram.me/share/url?url={{ urlencode($shareUrl) }}&text={{ urlencode($shareTitle) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-telegram fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- Pinterest -->
-                                    <div class="col-2">
-                                        <a href="https://pinterest.com/pin/create/button/?url={{ urlencode($shareUrl) }}&media={{ urlencode($imageUrl) }}&description={{ urlencode($shareTitle) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-pinterest fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- Reddit -->
-                                    <div class="col-2">
-                                        <a href="https://www.reddit.com/submit?url={{ urlencode($shareUrl) }}&title={{ urlencode($shareTitle) }}"
-                                            target="_blank">
-                                            <i class="fa-brands fa-reddit fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- Email -->
-                                    <div class="col-2">
-                                        <a href="mailto:?body={{ urlencode($shareMessage . ' ' . $shareUrl) }}"
-                                            target="_blank">
-                                            <i class="fa-solid fa-envelope fa-lg" style="color: #000000"></i>
-                                        </a>
-                                    </div>
+                                        <!-- Comment Toggle Button -->
+                                        <button onclick="toggleComments()" class="hide-button">
+                                            <i class="fa fa-comment" aria-hidden="true"></i>
+                                        </button>
+                                    </div>     
+                                    <div class="col-2" style="position: relative;"> <!-- Relative position for proper alignment -->
+                                        <p class="share-icon" style="padding-left: 10px; margin-top:5px; cursor: pointer;" onclick="toggleShareButtons({{ $blog->id }})">
+                                            <i class="fa fa-share-alt" aria-hidden="true" style="font-size: 20px;"></i>
+                                            <span id="share-count-{{ $blog->id }}">0</span> Shares
+                                        </p>
+                                    
+                                        <!-- Social Share Links Container -->
+                                        <div id="shareLinks" class="share-container">
+                                            <div class="share-links">
+                                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}" target="_blank">
+                                                    <i class="fa-brands fa-facebook"></i>
+                                                </a>
+                                                <a href="https://twitter.com/intent/tweet?text={{ urlencode($shareTitle) }}&url={{ urlencode($shareUrl) }}" target="_blank">
+                                                    <i class="fa-brands fa-twitter"></i>
+                                                </a>
+                                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($shareUrl) }}" target="_blank">
+                                                    <i class="fa-brands fa-linkedin"></i>
+                                                </a>
+                                                <a href="https://api.whatsapp.com/send?text={{ urlencode($shareMessage . ' ' . $shareUrl) }}" target="_blank">
+                                                    <i class="fa-brands fa-whatsapp"></i>
+                                                </a>
+                                                <a href="https://telegram.me/share/url?url={{ urlencode($shareUrl) }}&text={{ urlencode($shareTitle) }}" target="_blank">
+                                                    <i class="fa-brands fa-telegram"></i>
+                                                </a>
+                                                <a href="https://pinterest.com/pin/create/button/?url={{ urlencode($shareUrl) }}&media={{ urlencode($imageUrl) }}&description={{ urlencode($shareTitle) }}" target="_blank">
+                                                    <i class="fa-brands fa-pinterest"></i>
+                                                </a>
+                                                <a href="https://www.reddit.com/submit?url={{ urlencode($shareUrl) }}&title={{ urlencode($shareTitle) }}" target="_blank">
+                                                    <i class="fa-brands fa-reddit"></i>
+                                                </a>
+                                                <a href="mailto:?body={{ urlencode($shareMessage . ' ' . $shareUrl) }}" target="_blank">
+                                                    <i class="fa-solid fa-envelope"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>                               
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
+            </div>
+            {{-- <livewire:comments :model="$blog"/> --}}
+            <!-- Comment Section (शुरू में Hidden रहेगा) -->
+            <div id="commentSection" style="display: none;border:none;">
+                <livewire:comments :model="$blog"/>
             </div>
         </div>
     </div>
@@ -626,6 +724,78 @@
 </div>
 @endsection
 @section('customJs')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var shareButton = document.getElementById("shareButton");
+    var shareLinks = document.getElementById("shareLinks");
+
+    shareButton.addEventListener("click", function (event) {
+        // Toggle display of share links
+        if (shareLinks.style.display === "none" || shareLinks.style.display === "") {
+            shareLinks.style.display = "block";
+        } else {
+            shareLinks.style.display = "none";
+        }
+
+        event.stopPropagation(); // Stop event propagation
+    });
+
+    // Close share links when clicking outside
+    document.addEventListener("click", function (event) {
+        if (!shareLinks.contains(event.target) && event.target !== shareButton) {
+            shareLinks.style.display = "none";
+        }
+    });
+});
+
+</script>
+<script>
+    function toggleComments() {
+        let commentSection = document.getElementById('commentSection');
+        if (commentSection.style.display === "none") {
+            commentSection.style.display = "block";
+        } else {
+            commentSection.style.display = "none";
+        }
+    }
+</script>
+<script>
+    function likePost(postId) {
+        $.ajax({
+            url: '/like-post/' + postId, // URL for liking/unliking post
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}', // Include CSRF token for security
+            },
+            success: function (response) {
+                // Dynamically update the like count and heart icon
+                $('#likeCount-' + postId).text(response.likes); // Update like count
+                let likeButton = $('#likeButton-' + postId);
+
+                // Toggle the button text based on the action (like/unlike)
+                if (response.message == 'Post liked') {
+                    likeButton.html('❤️ <span id="likeCount-' + postId + '">' + response.likes + '</span>');
+                } else {
+                    likeButton.html('🤍 <span id="likeCount-' + postId + '">' + response.likes + '</span>');
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function showLoginPrompt(postId) {
+        // Show the login prompt message when the user clicks on the like button
+        $('#loginPrompt-' + postId).fadeIn();
+
+        // Hide the prompt after 3 seconds
+        setTimeout(function () {
+            $('#loginPrompt-' + postId).fadeOut();
+        }, 3000);
+    }
+</script>
+
 <script>
     // Define print-specific styles
     const printStyles = `

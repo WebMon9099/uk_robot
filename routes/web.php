@@ -28,7 +28,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\AdvocateambassadorController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
 
-
+Route::post('/like-post/{id}', [ViewBlogsController::class, 'likePost'])->name('like.post');
 Route::get('fresh', function () {
     Artisan::call('migrate:fresh --seed --force');
     Artisan::call('config:cache');

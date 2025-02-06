@@ -54,11 +54,22 @@ class ViewBlogsController extends Controller
         ->take(3)
         ->get();
         return response()->json($latestBlogs);
+    }public function likePost(Request $request, $id)
+    {
+        $post = Blog::findOrFail($id);
+    
+        // Check if user has already liked the post
+        $like = $post->likes()->where('user_id', auth()->id())->first();
+    
+        if ($like) {
+            $like->delete(); // Unlike the post
+            return response()->json(['message' => 'Post unliked', 'likes' => $post->likes->count()]);
+        } else {
+            $post->likes()->create(['user_id' => auth()->id()]);
+            return response()->json(['message' => 'Post liked', 'likes' => $post->likes->count()]);
+        }
     }
-
-   
-
-
+    
       
     
     public function show($slug)
