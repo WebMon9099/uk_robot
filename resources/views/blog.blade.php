@@ -496,7 +496,7 @@
                 with one
                 major difference: it’s healthy! Our Organic Honey Cola Kombucha offers all the familiar flavors of
                 classic cola
-                without any of the unhealthy aspects.”
+                without any of the unhealthy aspects ABCD.”
             </p>
 
             <a href="{{ route('advocate.ambassador') }}"
