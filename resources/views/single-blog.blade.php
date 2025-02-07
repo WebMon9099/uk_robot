@@ -615,77 +615,91 @@
 
                             </div>
 
-                            <div class="d-flex justify-content-start align-items-center mb-3">
-                                <div class="share-buttons d-flex">
-                                    <div class="col-3" style="margin-top: -7px;">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <!-- Like Button -->
+                                    <div class="me-3">
                                         <div class="post-actions">
-                                            @if(auth()->check())
-                                                <!-- Logged-in user can like/unlike -->
-                                                <button class="btn btn-like" id="likeButton-{{ $blog->id }}" onclick="likePost({{ $blog->id }})">
-                                                    ❤️ 
-                                                    <span id="likeCount-{{ $blog->id }}" class="like-count">{{ $blog->likes->count() }}</span>
+                                            @if (auth()->check())
+                                                <button class="btn btn-like" id="likeButton-{{ $blog->id }}"
+                                                    onclick="likePost({{ $blog->id }})">
+                                                    ❤️ <span id="likeCount-{{ $blog->id }}"
+                                                        class="like-count">{{ $blog->likes->count() }}</span>
                                                 </button>
                                             @else
-                                                <!-- Non-logged-in user sees an unliked heart with hover message -->
-                                                <button class="btn btn-like" id="likeButton-{{ $blog->id }}" onclick="showLoginPrompt({{ $blog->id }})">
-                                                    🤍 
-                                                    <span id="likeCount-{{ $blog->id }}" class="like-count">{{ $blog->likes->count() }}</span>
+                                                <button class="btn btn-like" id="likeButton-{{ $blog->id }}"
+                                                    onclick="showLoginPrompt({{ $blog->id }})">
+                                                    🤍 <span id="likeCount-{{ $blog->id }}"
+                                                        class="like-count">{{ $blog->likes->count() }}</span>
                                                 </button>
-                                                <span id="loginPrompt-{{ $blog->id }}" class="login-prompt" style="display:none;">Please login to like</span>
+                                                <span id="loginPrompt-{{ $blog->id }}" class="login-prompt"
+                                                    style="display:none;">Please login to like</span>
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-3">
-                                        <!-- Comment Toggle Button -->
+
+                                    <!-- Comment Toggle Button -->
+                                    <div class="me-3">
                                         <button onclick="toggleComments()" class="hide-button">
                                             <i class="fa fa-comment" aria-hidden="true"></i>
                                         </button>
-                                    </div>     
-                                    <div class="col-3" style="position: relative;"> <!-- Relative position for proper alignment -->
+                                        {{ $blog->comments()->count() }}
+                                    </div>
+
+                                    <!-- Share Button -->
+                                    <div class="me-3 position-relative">
                                         <div class="share-icon">
-                                            <button class="btn btn-share" id="shareButton">
-                                                <i class="fa fa-share-alt" aria-hidden="true" style="font-size: 20px;"></i>
+                                            <button class="btn btn-share" id="shareButton" style="border: none;">
+                                                <i class="fa fa-share-alt" aria-hidden="true"
+                                                    style="font-size: 20px;"></i>
                                             </button>
+                                            <span id="shareCount-{{ $blog->id }}">{{ $blog->share_count }}</span>
                                         </div>
-                                    
-                                        <!-- Social Share Links Container -->
+
+                                        <!-- Social Share Links -->
                                         <div id="shareLinks" class="share-container">
-                                            <div class="share-links">
-                                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}" target="_blank">
+                                            <div class="share-links d-flex">
+                                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-facebook"></i>
                                                 </a>
-                                                <a href="https://twitter.com/intent/tweet?text={{ urlencode($shareTitle) }}&url={{ urlencode($shareUrl) }}" target="_blank">
+                                                <a href="https://twitter.com/intent/tweet?text={{ urlencode($shareTitle) }}&url={{ urlencode($shareUrl) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-twitter"></i>
                                                 </a>
-                                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($shareUrl) }}" target="_blank">
+                                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($shareUrl) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-linkedin"></i>
                                                 </a>
-                                                <a href="https://api.whatsapp.com/send?text={{ urlencode($shareMessage . ' ' . $shareUrl) }}" target="_blank">
+                                                <a href="https://api.whatsapp.com/send?text={{ urlencode($shareMessage . ' ' . $shareUrl) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-whatsapp"></i>
                                                 </a>
-                                                <a href="https://telegram.me/share/url?url={{ urlencode($shareUrl) }}&text={{ urlencode($shareTitle) }}" target="_blank">
+                                                <a href="https://telegram.me/share/url?url={{ urlencode($shareUrl) }}&text={{ urlencode($shareTitle) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-telegram"></i>
                                                 </a>
-                                                <a href="https://pinterest.com/pin/create/button/?url={{ urlencode($shareUrl) }}&media={{ urlencode($imageUrl) }}&description={{ urlencode($shareTitle) }}" target="_blank">
+                                                <a href="https://pinterest.com/pin/create/button/?url={{ urlencode($shareUrl) }}&media={{ urlencode($imageUrl) }}&description={{ urlencode($shareTitle) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-pinterest"></i>
                                                 </a>
-                                                <a href="https://www.reddit.com/submit?url={{ urlencode($shareUrl) }}&title={{ urlencode($shareTitle) }}" target="_blank">
+                                                <a href="https://www.reddit.com/submit?url={{ urlencode($shareUrl) }}&title={{ urlencode($shareTitle) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-brands fa-reddit"></i>
                                                 </a>
-                                                <a href="mailto:?body={{ urlencode($shareMessage . ' ' . $shareUrl) }}" target="_blank">
+                                                <a href="mailto:?body={{ urlencode($shareMessage . ' ' . $shareUrl) }}"
+                                                    target="_blank" onclick="updateShareCount({{ $blog->id }})">
                                                     <i class="fa-solid fa-envelope"></i>
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>  
-                                    <!-- Read Count  -->
-                                    <div class="col-3 mt-1 ">
-                                        <div>
-                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </div>
+
+                                    <!-- Read Count -->
+                                    <div class="me-3">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
                                         <span class="ml-1">{{ $blog->read_times }}</span>
-                                        </div>
-                                        
-                                    </div>                             
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -693,7 +707,7 @@
                 </div>
             </div>
             {{-- <livewire:comments :model="$blog"/> --}}
-            <!-- Comment Section (शुरू में Hidden रहेगा) -->
+           
             <div id="commentSection" style="display: none;border:none;">
                 <livewire:comments :model="$blog"/>
             </div>
@@ -793,6 +807,24 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    function updateShareCount(blogId) {
+            fetch(`/update-share-count/${blogId}`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`shareCount-${blogId}`).innerText = data.share_count;
+                    }
+                })
+                .catch(error => console.error("Error updating share count:", error));
+        }
 
     function showLoginPrompt(postId) {
         // Show the login prompt message when the user clicks on the like button

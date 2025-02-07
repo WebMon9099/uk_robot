@@ -152,6 +152,14 @@ class ViewBlogsController extends Controller
     
         return view('single-blog', compact('blog', 'latestBlogs', 'section1', 'section2', 'section3', 'section4', 'shareUrl', 'shareTitle', 'shareDescription', 'imageUrl', 'shareMessage', 'hasImage'));
     }
+    public function updateShareCount($id)
+    {
+        $blog = Blog::findOrFail($id);
+        $blog->increment('share_count');
+
+        return response()->json(['success' => true, 'share_count' => $blog->share_count]);
+    }
+
     
     
 }
