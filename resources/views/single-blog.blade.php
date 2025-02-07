@@ -635,17 +635,18 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-3">
                                         <!-- Comment Toggle Button -->
                                         <button onclick="toggleComments()" class="hide-button">
                                             <i class="fa fa-comment" aria-hidden="true"></i>
                                         </button>
                                     </div>     
-                                    <div class="col-2" style="position: relative;"> <!-- Relative position for proper alignment -->
-                                        <p class="share-icon" style="padding-left: 10px; margin-top:5px; cursor: pointer;" onclick="toggleShareButtons({{ $blog->id }})">
-                                            <i class="fa fa-share-alt" aria-hidden="true" style="font-size: 20px;"></i>
-                                            <span id="share-count-{{ $blog->id }}">0</span> Shares
-                                        </p>
+                                    <div class="col-3" style="position: relative;"> <!-- Relative position for proper alignment -->
+                                        <div class="share-icon">
+                                            <button class="btn btn-share" id="shareButton">
+                                                <i class="fa fa-share-alt" aria-hidden="true" style="font-size: 20px;"></i>
+                                            </button>
+                                        </div>
                                     
                                         <!-- Social Share Links Container -->
                                         <div id="shareLinks" class="share-container">
@@ -676,7 +677,15 @@
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>                               
+                                    </div>  
+                                    <!-- Read Count  -->
+                                    <div class="col-3 mt-1 ">
+                                        <div>
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        <span class="ml-1">{{ $blog->read_times }}</span>
+                                        </div>
+                                        
+                                    </div>                             
                                 </div>
                             </div>
                         </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Blog;
 use GuzzleHttp\Client;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Illuminate\Support\Facades\Session;
 
 
 
@@ -72,10 +73,19 @@ class ViewBlogsController extends Controller
     
       
     
+   
     public function show($slug)
     {
+        $blog = Blog::where('slug', $slug)->firstOrFail();
+
+        if (!Session::has('viewed_blog_' . $blog->id)) {
+
+            $blog->increment('read_times'); // This line will actually increase the count in the DB
+
+            Session::put('viewed_blog_' . $blog->id, true);
         // Retrieve the blog post by slug
         $blog = Blog::where('slug', $slug)->firstOrFail();
+        }
         
         // Fetch the latest blogs excluding the current one, based on slug
         $latestBlogs = Blog::with('images')
@@ -138,10 +148,10 @@ class ViewBlogsController extends Controller
     
         // Determine if there are images to display
         $hasImage = $blog->images->isNotEmpty();
+        
     
         return view('single-blog', compact('blog', 'latestBlogs', 'section1', 'section2', 'section3', 'section4', 'shareUrl', 'shareTitle', 'shareDescription', 'imageUrl', 'shareMessage', 'hasImage'));
     }
-    
     
     
 }
