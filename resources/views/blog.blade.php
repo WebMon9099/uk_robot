@@ -6,7 +6,7 @@
         .share-icon {
             cursor: pointer;
         }
-        
+
 
         /* Style for the share buttons container */
         .share-buttons-container {
@@ -556,12 +556,20 @@
                                                         {{ DB::table('comments')->where('commentable_id', $blog->id)->where('commentable_type', 'App\Models\Blog')->count() }}
                                                     </span> Comments
                                                 </p>
-                                                <p class="share-icon" style="cursor: pointer;" onclick="toggleShareButtons({{ $blog->id }})">
-                                                    <i class="fa fa-share-alt" aria-hidden="true" style="font-size: 24px;"></i>
-                                                    <span id="share-count-{{ $blog->id }}"></span> Shares
+                                                <p class="share-icon" style="cursor: pointer;"
+                                                    onclick="toggleShareButtons({{ $blog->id }})">
+                                                    <i class="fa fa-share-alt" aria-hidden="true"
+                                                        style="font-size:18px;"></i>
+                                                    <span
+                                                        id="shareCount-{{ $blog->id }}">{{ $blog->share_count }}</span>
+                                                    Shares
+                                                </p>
+                                                <p class="me-2 mx-2">
+                                                    <i class="fa fa-eye" aria-hidden="true" style="font-size:18px;"></i>
+                                                    <span class="ml-1">{{ $blog->read_times }}</span>
                                                 </p>
                                             </div>
-                                            
+
 
 
                                             <!-- Share Buttons Container (Initially Hidden) -->
@@ -572,7 +580,8 @@
                                                         <!-- Facebook -->
                                                         <div class="col-1">
                                                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($blog->shareUrl) }}&picture={{ urlencode($blog->shareImage) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon"
+                                                                onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-brands fa-facebook fa-lg"
                                                                     style="color: #4267B2"></i>
                                                             </a>
@@ -581,7 +590,8 @@
                                                         <!-- Twitter -->
                                                         <div class="col-1">
                                                             <a href="https://twitter.com/intent/tweet?text={{ urlencode($blog->shareTitle) }}&url={{ urlencode($blog->shareUrl) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon"
+                                                                onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-brands fa-twitter fa-lg"
                                                                     style="color: #1DA1F2"></i>
                                                             </a>
@@ -590,7 +600,8 @@
                                                         <!-- LinkedIn -->
                                                         <div class="col-1">
                                                             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($blog->shareUrl) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon"
+                                                                onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-brands fa-linkedin fa-lg"
                                                                     style="color: #0077B5"></i>
                                                             </a>
@@ -599,7 +610,7 @@
                                                         <!-- WhatsApp -->
                                                         <div class="col-1">
                                                             <a href="https://api.whatsapp.com/send?text={{ urlencode($blog->shareUrl) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon" onclick="updateShareCount(event, {{ $blog->id }})" >
                                                                 <i class="fa-brands fa-whatsapp fa-lg"
                                                                     style="color:#25D366"></i>
                                                             </a>
@@ -608,7 +619,7 @@
                                                         <!-- Telegram -->
                                                         <div class="col-1">
                                                             <a href="https://telegram.me/share/url?url={{ urlencode($blog->shareUrl) }}&text={{ urlencode($blog->shareTitle) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon" onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-brands fa-telegram fa-lg"
                                                                     style="color: #0088cc"></i>
                                                             </a>
@@ -617,7 +628,7 @@
                                                         <!-- Pinterest -->
                                                         <div class="col-1">
                                                             <a href="https://pinterest.com/pin/create/button/?url={{ urlencode($blog->shareUrl) }}&media={{ urlencode($blog->shareImage) }}&description={{ urlencode($blog->shareTitle) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon" onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-brands fa-pinterest fa-lg"
                                                                     style="color: #E60023"></i>
                                                             </a>
@@ -626,7 +637,7 @@
                                                         <!-- Reddit -->
                                                         <div class="col-1">
                                                             <a href="https://www.reddit.com/submit?url={{ urlencode($blog->shareUrl) }}&title={{ urlencode($blog->shareTitle) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon" onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-brands fa-reddit fa-lg"
                                                                     style="color: #FF4500"></i>
                                                             </a>
@@ -635,7 +646,7 @@
                                                         <!-- Email -->
                                                         <div class="col-1">
                                                             <a href="mailto:?body={{ urlencode($blog->shareUrl) }}"
-                                                                target="_blank" class="share-icon">
+                                                                target="_blank" class="share-icon" onclick="updateShareCount(event, {{ $blog->id }})">
                                                                 <i class="fa-solid fa-envelope fa-lg"
                                                                     style="color: #000000"></i>
                                                             </a>
@@ -643,6 +654,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -820,5 +832,30 @@
                 isLoading = false;
             }
         });
+        function updateShareCount(event, blogId) {
+        event.preventDefault(); // Prevents immediate navigation
+
+        $.ajax({
+            url: `/update-share-count/${blogId}`,
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF Token for Laravel
+            },
+            success: function(response) {
+                if (response.success) {
+                    let shareCountElement = $(`#share-count-${blogId}`);
+
+                    // Update the share count text dynamically
+                    shareCountElement.text(response.share_count);
+
+                    // Open the share URL in a new tab
+                    window.open(event.target.closest('a').href, '_blank');
+                }
+            },
+            error: function(xhr) {
+                console.error('Error updating share count:', xhr.responseText);
+            }
+        });
+    }
     </script>
 @endsection
