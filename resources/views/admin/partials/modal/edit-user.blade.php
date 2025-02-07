@@ -54,6 +54,19 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-md-12 mb-3">
+                    <label for="user_role" class="form-label">User Role</label>
+                    <select name="user_role" id="user_role" class="form-control">
+                        @if (Auth::user()->user_type == 0) <!-- Check if logged-in user is Super Admin -->
+                            <option value="1" {{ $user->user_type == 1 ? 'selected' : '' }}>Admin</option>
+                        @endif
+                        <option value="2" {{ $user->user_type == 2 ? 'selected' : '' }}>User</option>
+                        <option value="3" {{ $user->user_type == 3 ? 'selected' : '' }}>Journalist</option>
+                        <option value="4" {{ $user->user_type == 4 ? 'selected' : '' }}>Blogger</option>
+                        <option value="5" {{ $user->user_type == 5 ? 'selected' : '' }}>Social Media Influencer</option>
+                        <option value="6" {{ $user->user_type == 6 ? 'selected' : '' }}>Local Writer</option>
+                    </select>
+                </div>
 
                 <button type="submit" class="btn btn-primary">Update User</button>
             </form>

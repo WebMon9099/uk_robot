@@ -89,7 +89,8 @@ class UserController extends Controller
             'postcode' => 'nullable|string',
             'state' => 'nullable|string',
             'country' => 'nullable|string',
-            'user_status' => 'nullable|in:0,1'
+            'user_status' => 'nullable|in:0,1',
+            'user_role' => 'required|in:1,2,3,4,5,6' 
         ]);
         //dd($request);
     
@@ -100,7 +101,8 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'status' => $request->user_status 
+                'status' => $request->user_status,
+                'user_type' => $request->user_role  
             ]);
     
             // Update or create User Details
@@ -111,6 +113,7 @@ class UserController extends Controller
                     'postcode' => $request->postcode,
                     'state' => $request->state,
                     'country' => $request->country,
+                    
                 ]
             );
     
