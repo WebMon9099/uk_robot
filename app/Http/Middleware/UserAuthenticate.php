@@ -19,7 +19,7 @@ class UserAuthenticate
         // if (Auth::check() && Auth::user()->user_type == 2) {
         //     return $next($request);
         // }
-        if (Auth::check() && in_array(Auth::user()->user_type,[1,2,3,4,5,6,7,8])) {
+        if (Auth::check() && in_array(Auth::user()->user_type,[1,2,3,4,5,6,7,8,9])) {
             return $next($request);
         }
         if (!session()->has('url.intended')) {
