@@ -16,7 +16,7 @@ class UserController extends Controller
         $currentUserType = auth()->user()->user_type;
 
         // Define the array of user types based on currentUserType
-        $userTypes = $currentUserType == 1 ? [2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6]; // Include all types for other user types
+        $userTypes = $currentUserType == 1 ? [2, 3, 4, 5, 6, 7, 8, 9] : [1, 2, 3, 4, 5, 6, 7, 8, 9]; // Include all types for other user types
 
         // Fetch users based on the dynamic user type filter
         $user = User::whereIn('user_type', $userTypes)->latest();
@@ -90,9 +90,9 @@ class UserController extends Controller
             'state' => 'nullable|string',
             'country' => 'nullable|string',
             'user_status' => 'nullable|in:0,1',
-            'user_role' => 'required|in:1,2,3,4,5,6' 
+            'user_role' => 'required|in:1,2,3,4,5,6,7,8,9' 
         ]);
-        //dd($request);
+       
     
         try {
             //dd($request->all());
@@ -104,7 +104,7 @@ class UserController extends Controller
                 'status' => $request->user_status,
                 'user_type' => $request->user_role  
             ]);
-    
+           
             // Update or create User Details
             $user->details()->updateOrCreate(
                 ['user_id' => $user->id], 
@@ -113,7 +113,6 @@ class UserController extends Controller
                     'postcode' => $request->postcode,
                     'state' => $request->state,
                     'country' => $request->country,
-                    
                 ]
             );
     
@@ -123,21 +122,39 @@ class UserController extends Controller
         }
     }
     public function destroy($id)
-{
-    try {
-        // Find the user by ID and delete
-        $user = User::findOrFail($id);
-        
-        // Optionally, delete user details if they exist
-        $user->details()->delete();
-        
-        $user->delete(); // Delete the user
+    {
+        try {
+            // Find the user by ID and delete
+            $user = User::findOrFail($id);
+            
+            // Optionally, delete user details if they exist
+            $user->details()->delete();
+            
+            $user->delete(); // Delete the user
 
-        return back()->with('success', 'User Deleted Successfully!');
-    } catch (\Exception $e) {
-        return back()->with('error', 'User Deletion Failed: ' . $e->getMessage());
+            return back()->with('success', 'User Deleted Successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'User Deletion Failed: ' . $e->getMessage());
+        }
     }
-}
+
+    public function roles(Request $request)
+    {
+        // Get the authenticated user's user_type
+        $currentUserType = auth()->user()->user_type;
+
+        // Define the array of user types based on currentUserType 
+        $userTypes = $currentUserType == 1 ? [2, 3, 4, 5, 6, 7, 8, 9] : [1, 2, 3, 4, 5, 6, 7, 8, 9]; // Include all types for other user types
+
+        // Fetch users based on the dynamic user type filter
+        $users = User::whereIn('user_type', $userTypes)->latest();
+        if(!empty($request->get('keyword')))
+        {
+            $users=User::where('name','like','%'.$request->get('keyword').'%');
+        }
+        $users=$users->get();
+        return view('admin.User.user-role',compact('users'));
+    }
 
     
 }

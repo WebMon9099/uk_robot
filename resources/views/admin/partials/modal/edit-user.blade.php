@@ -65,6 +65,9 @@
                         <option value="4" {{ $user->user_type == 4 ? 'selected' : '' }}>Blogger</option>
                         <option value="5" {{ $user->user_type == 5 ? 'selected' : '' }}>Social Media Influencer</option>
                         <option value="6" {{ $user->user_type == 6 ? 'selected' : '' }}>Local Writer</option>
+                        <option value="7" {{ $user->user_type == 7 ? 'selected' : '' }}>Sales Professional</option>
+                        <option value="8" {{ $user->user_type == 8 ? 'selected' : '' }}>Wholesaler / Wholesale Customer</option>
+                        <option value="9" {{ $user->user_type == 9 ? 'selected' : '' }}>Retailer / Retail Customer</option>
                     </select>
                 </div>
 
