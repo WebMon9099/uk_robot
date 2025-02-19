@@ -7,6 +7,8 @@ use App\Models\Cart;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Blog;
+use App\Models\ContactUs;
+use App\Models\NewsLetter;
 use App\Models\Order;
 use App\Models\PressRelease;
 use App\Models\UserDetails;
@@ -65,7 +67,7 @@ class AuthController extends Controller
            'password' => bcrypt($request->input('password')),
            'status' => '0', // Default status to 0
        ]);
-       $adminEmail = 'ganeshgp1015@gmail.com'; // Replace with your admin email
+       $adminEmail = 'pascal@robotkombucha.co.uk'; // Replace with your admin email
        Mail::to($adminEmail)->send(new AdminUserRegisteredNotification($user));
   
        return redirect()->route('user.login');
@@ -75,7 +77,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-        return view('admin.auth.login');
+        return view('user.login');
     }
 
     public function submitLogin(Request $request)
@@ -139,7 +141,7 @@ class AuthController extends Controller
                 // If user type is 2, redirect to user dashboard
                 return response()->json(['success' => 'User logged in successfully.', 'redirect' => route('product')]);
 
-            } elseif ($user->user_type == 3 || $user->user_type == 4 || $user->user_type == 5 || $user->user_type == 6 || $user->user_type==7 ) {
+            } elseif ($user->user_type == 3 || $user->user_type == 4 || $user->user_type == 5 || $user->user_type == 6 || $user->user_type == 7 || $user->user_type == 8 || $user->user_type == 9 ) {
                 // If user type is 1, redirect to admin dashboard
                 return response()->json(['success' => 'Logged in successfully.', 'redirect' => route('dashboard')]);
             }else {
@@ -159,6 +161,8 @@ class AuthController extends Controller
         $totalUsers = User::count(); // Total users
         $totalProducts = Product::count(); // Total products
         $totalBlogs = Blog::count(); // Total blogs
+        $totalContactus = ContactUs::count();
+        $totalNewsletter = NewsLetter::count();
         // $totalImages = BlogImage::count(); // Total blog images
         $totalOrders = Order::count(); // Total orders
         $totalPressPr = PressRelease::count(); 
@@ -167,6 +171,8 @@ class AuthController extends Controller
             'totalUsers' => $totalUsers,
             'totalProducts' => $totalProducts,
             'totalBlogs' => $totalBlogs,
+            'totalContactus' => $totalContactus,
+            'totalNewsletter' => $totalNewsletter,
             // 'totalImages' => $totalImages,
             'totalOrders' => $totalOrders, // Pass total orders to the view
             // 'blogs' => $blogs, // Pass blogs with images to the view
