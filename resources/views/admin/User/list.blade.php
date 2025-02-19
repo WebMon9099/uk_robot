@@ -140,6 +140,9 @@
                                     <option value="4"> Blogger</option>
                                     <option value="5"> Social Media Influencer</option>
                                     <option value="6"> Local Writer</option>
+                                    <option value="7"> Sales Professional</option>
+                                    <option value="8"> Wholesaler / Wholesale Customer</option>
+                                    <option value="9"> Retailer / Retail Customer</option>
                                 </select>
                             </div>
                         </div>
