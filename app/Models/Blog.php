@@ -33,7 +33,9 @@ class Blog extends Model
         'social_links' => 'array',
     ];
 
-    protected $fillable = ['title', 'date', 'description','category','published_by','written_by','press_link','user_id','blog_type','social_links','share_count'];
+    protected $fillable = ['title', 'date', 'description','category','published_by','written_by','press_link',
+        'user_id','blog_type','social_links','share_count', 'meta_title', 'meta_keywords'
+    ];
 
     // Define the relationship to blog_images
     public function images()

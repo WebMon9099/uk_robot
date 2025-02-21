@@ -15,11 +15,11 @@
                 <div class="d-flex justify-content-between">
                     <h4 class="mb-3">Blogs</h4>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBlogModal">
-                        <i class="fa fa-plus-circle me-2"></i> Add New Blog Piece
+                        <i class="fa fa-plus-circle me-2"></i> Add New Blog
                     </button>
                 </div>
             </div>
-            
+
             <div class="table-responsive text-nowrap card-body">
 
                 <table class="table table-hover table-border-bottom-0" id="Datatable">
@@ -49,8 +49,8 @@
                                     <p>No Image Available</p>
                                 @endif
                                 </td>
-                                <td>{{ Str::words($blog->description,3) }}..</td>
-                                
+                                <td>{!! Str::limit($blog->description, 20, '...') !!}</td>
+
                                 <td>
                                     <button class="btn rounded-pill btn-primary btn-sm edit-user-btn edit-btn"
                                         data-id="{{ $blog->id }}" data-title="{{ $blog->title }}" data-sub-title="{{ $blog->sub_title }}"
@@ -63,7 +63,7 @@
                                         data-written-by="{{ $blog->written_by }}"
                                         data-publisher-bio="{{ $blog->publisher_bio }}"
                                         data-press-link="{{ $blog->press_link }}"
-                                        
+
                                         data-bs-toggle="modal"
                                         data-bs-target="#editBlogModal">
                                         <i class="fa fa-edit m-0"></i>
@@ -86,9 +86,9 @@
                         @endforelse
                     </tbody>
                 </table>
-                
+
             </div>
-            
+
         </div>
     </div>
 
@@ -97,81 +97,133 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addBlogModalLabel">Add NEW BLOG PIECE</h5>
+                    <h5 class="modal-title" id="addBlogModalLabel">Add NEW BLOG</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addBlogForm" method="post" enctype="multipart/form-data">
                         @csrf
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" name="title" id="title" required>
-                            <div class="invalid-feedback" id="title-error"></div>
+                        <div class="step active step-1">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" name="title" id="title" maxlength="50">
+                                <div class="invalid-feedback" id="title-error"></div>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">please add your main headline(This will be up to 50 letters max - we will type this in larger text, bold)</p>
+                            </div>
+                            <p class="counter" id="title-count">Remaining: 50</p>
                         </div>
-                        <div class="mb-3">
-                            <label for="subtitle" class="form-label">Sub-Title</label>
-                            <input type="text" class="form-control" name="sub_title" id="subtitle">
-                            <div class="invalid-feedback" id="subtitle-error"></div>
+                        <div class="step step-2 d-none">
+                            <div class="mb-3">
+                                <label for="subtitle" class="form-label">Sub-Title</label>
+                                <textarea rows="3" class="form-control" name="sub_title" id="subtitle" maxlength="100"></textarea>
+                                <div class="invalid-feedback" id="subtitle-error"></div>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">Thanks - now please add a sub-heading - you can add up to 100 letters, to describe your piece in more detail - following on from the headline. (You must not exceed 100 words for this - the counter will show you how many words you have left..)</p>
+                            </div>
+                            <p class="counter" id="sub-title-count">Remaining: 100</p>
                         </div>
-                        <div class="mb-3">
-                            <label for="date" class="form-label">Date</label>
-                            <input type="date" class="form-control" name="date" id="date" required>
-                            <div class="invalid-feedback" id="date-error"></div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="blog_images" class="form-label">Upload Images (Max: 3)</label>
-                            <input type="file" name="blog_images[]" multiple>
-                        </div>
-                        <div id="image-captions-container" class="row g-3">
-                            <!-- Captions will be added dynamically here -->
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="category" class="form-label">Category</label>
-                            <select name="category_name" id="category" class="form-control" required>
-                                <option value="" disabled selected>Select a Category</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->category }}">{{ $category->category }}</option>
-                                @endforeach
-                                <option value="other">Other (Please specify)</option> <!-- Option for custom category -->
-                            </select>
-                            <div class="invalid-feedback" id="category-error"></div>
-
-                            <!-- Input field for new category, hidden by default -->
-                            <div id="newCategoryContainer" style="display: none;">
-                                <label for="new_category" class="form-label">New Category</label>
-                                <input type="text" name="new_category" id="new_category" class="form-control"
-                                    placeholder="Enter new category">
-                                <div class="invalid-feedback" id="new_category-error"></div>
+                        <div class="step step-3 d-none">
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" name="date" id="date">
+                                <div class="invalid-feedback" id="date-error"></div>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">Please check the publication date - it’s today’s date.. You can schedule it for later but you can’t backdate a publication</p>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea id="description" name="description" rows="8" class="form-control"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="published_by" class="form-label">Published by</label>
-                            <input type="text" class="form-control" name="published_by" id="published_by">
-                            <div class="invalid-feedback" id="published_by-error"></div>
-                        </div>
+                        <div class="step step-4 d-none">
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select name="category_name" id="category" class="form-control" style="appearance:auto;">
+                                    <option value="" disabled selected>Select a Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->category }}">{{ $category->category }}</option>
+                                    @endforeach
+                                    <option value="other">Other (Please specify)</option> <!-- Option for custom category -->
+                                </select>
+                                <div class="invalid-feedback" id="category-error"></div>
 
-                        <div class="mb-3">
-                            <label for="written_by" class="form-label">Written by</label>
-                            <input type="text" class="form-control" name="written_by" id="Written_by">
-                            <div class="invalid-feedback" id="written_by-error"></div>
+                                <!-- Input field for new category, hidden by default -->
+                                <div id="newCategoryContainer" style="display: none;">
+                                    <label for="new_category" class="form-label">New Category</label>
+                                    <input type="text" name="new_category" id="new_category" class="form-control"
+                                        placeholder="Enter new category">
+                                    <div class="invalid-feedback" id="new_category-error"></div>
+                                </div>
+                                <div class="mb-3 desc">
+                                    <p class="text-muted bubble">Please select a category for your blog / editorial.. this will help to define a search criteria, and also to categorise your work. Choose from the drop down - the best category that describes your work</p>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="publisher_bio" class="form-label">publisher bio</label>
-                            <textarea id="publisher_bio" name="publisher_bio" rows="4" class="form-control"></textarea>
+                        <div class="step step-5 d-none">
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea id="description" name="description" rows="8" maxlength="1000" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">Now, please add the main body of your story - try to add paragraphs - to make the story easier to read.. we will carry out a spell check once it is completed) you can add up to 1000 words - the countdown will show you how many words are remaining..</p>
+                            </div>
+                            <p class="counter" id="desc-count">Remaining: 1000 words</p>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="press_link" class="form-label">Press Link</label>
-                            <input type="url" name="press_link" id="press_link" class="form-control">
+                        <div class="step step-6 d-none">
+                            <div class="mb-3">
+                                <label for="blog_images" class="form-label">Upload Images (Max: 3)</label>
+                                <input type="file" name="blog_images[]" multiple>
+                            </div>
+                            <div id="image-captions-container" class="row g-3">
+                                <!-- Captions will be added dynamically here -->
+                            </div>
+                            <div class="mb-8 desc">
+                                <p class="text-muted bubble">Now - for some images - you can upload a maximum of 3 in a 1000 word piece . Add image 1 (add a 20 word description) add image 2 etc ..</p>
+                            </div>
                         </div>
-
+                        <div class="step step-7 d-none">
+                            <div class="mb-3">
+                                <label for="published_by" class="form-label">Published by</label>
+                                <input type="text" class="form-control" name="published_by" id="published_by" value="Net Zero Foods">
+                                <div class="invalid-feedback" id="published_by-error"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="written_by" class="form-label">Written by</label>
+                                <input type="text" class="form-control" name="written_by" id="Written_by">
+                                <div class="invalid-feedback" id="written_by-error"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="publisher_bio" class="form-label">publisher bio</label>
+                                <textarea id="publisher_bio" name="publisher_bio" rows="4" class="form-control"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="press_link" class="form-label">Press Link</label>
+                                <input name="press_link" id="press_link" class="form-control">
+                                <div class="invalid-feedback" id="press_link-error"></div>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">The Press link should be url to blog post that covers a product in the press </p>
+                            </div>
+                        </div>
+                        <div class="step step-8 d-none">
+                            <div class="mb-3">
+                                <label for="meta_title" class="form-label">Meta title</label>
+                                <input type="text" class="form-control" name="meta_title" id="meta_title">
+                                <div class="invalid-feedback" id="meta_title-error"></div>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">The Meta Title is hidden from human view, it is the search engine title, that Google will look for, to find your work.. you can use the same words as the public title, but you can also use some additional words to help Google find it.. so it doesn’t have to make sense</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="meta_keywords" class="form-label">keywords</label>
+                                <input type="text" class="form-control" name="meta_keywords" id="meta_keywords">
+                                <div class="invalid-feedback" id="meta_keywords-error"></div>
+                            </div>
+                            <div class="mb-3 desc">
+                                <p class="text-muted bubble">Key words are important words which Google look for, to identify your work, and for people to find it.. So these are words that Google will use. Please type one word at a time, and press enter - this will add your key words one by one to the search bank</p>
+                            </div>
+                            <div class="invalid-feedback" id="all-error"></div>
+                        </div>
                         {{-- <div class="mb-3">
                             <label for="tiktok" class="form-label">TikTok</label>
                             <input type="url" name="social_links[tiktok]" class="form-control" id="tiktok">
@@ -197,7 +249,11 @@
                             <input type="url" name="social_links[twitter]" class="form-control"
                                 value="{{ $blog->social_links['twitter'] ?? '' }}" id="twitter">
                         </div> --}}
-                        <button type="submit" class="btn btn-primary">Add BLOG</button>
+                        <div class="mt-3 text-center">
+                            <button type="button" class="btn btn-primary prev-btn d-none">Previous</button>
+                            <button type="button" class="btn btn-primary next-btn">Next</button>
+                            <button type="submit" class="btn submit-btn btn-success">Add BLOG</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -221,7 +277,7 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label for="editTitle" class="form-label">Title</label>
-                                <input type="text" id="editTitle" name="title" class="form-control" required>
+                                <input type="text" id="editTitle" name="title" class="form-control">
                                 <div class="invalid-feedback" id="editTitle-error"></div>
                             </div>
 
@@ -232,19 +288,19 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="editDate" class="form-label">Date</label>
-                                <input type="date" id="editDate" name="date" class="form-control" required>
+                                <input type="date" id="editDate" name="date" class="form-control">
                                 <div class="invalid-feedback" id="editDate-error"></div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="editCategory" class="form-label">Category</label>
-                                <select name="category_name" id="editCategory" class="form-control" required>
+                                <select name="category_name" id="editCategory" class="form-control">
                                     <option value="" disabled>Select a Category</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->category }}">{{ $category->category }}</option>
                                     @endforeach
                                 </select>
                                 <div class="invalid-feedback" id="edit-category-error"></div>
-                            </div>                            
+                            </div>
 
                              <!-- Existing Images Section -->
                             <!-- Current Images Section in Edit Modal -->
@@ -253,7 +309,7 @@
                                 <div id="currentImages"></div>
                             </div>
 
-                            
+
                             <div class="mb-3">
                                 <label for="edit_blog_images" class="form-label">Upload Images (Max: 3)</label>
                                 <input type="file" name="edit_blog_images[]" multiple>
@@ -320,15 +376,73 @@
             </div>
         </div>
     </div>
-    
+
+    <style>
+        .step {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .d-none {
+            display: none;
+        }
+        .bubble{
+            margin-top:20px;
+            position: relative;
+            background: #f9f9f9;
+            color: #333;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            border: 2px solid #ddd;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .bubble::before {
+            content: "";
+            position: absolute;
+            top: -15px; /* Moves the tail above */
+            left: 20px; /* Adjusts horizontal positioning */
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 10px 15px 10px; /* Creates the triangle shape */
+            border-color: transparent transparent #f9f9f9 transparent;
+            filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.1)); /* Adds shadow to tail */
+        }
+        .counter {
+            font-size: 14px;
+            color: #ec5555;
+            margin-top: 5px;
+            text-align: right;
+        }
+    </style>
     <script src="{{ asset('assets/tinymce/js/tinymce/tinymce.min.js') }}"></script>
-    
+
     <script>
+        function updateWordCount(editor) {
+            let maxWords = 1000;
+            let content = editor.getContent({ format: 'text' });
+            let words = content.trim().split(/\s+/).filter(word => word.length > 0);
+            let remaining = maxWords - words.length;
+
+            document.getElementById('desc-count').textContent = `Remaining: ${remaining < 0 ? 0 : remaining} words`;
+
+            if (remaining <= 0) {
+                let trimmedContent = words.slice(0, maxWords).join(" ");
+                editor.setContent(trimmedContent);
+            }
+        }
+
         tinymce.init({
             selector: 'textarea#description',
             width: '100%',
             height: 300,
-            
+
             plugins: [
                 'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor',
                 'pagebreak', 'searchreplace', 'wordcount', 'visualblocks', 'code', 'fullscreen',
@@ -344,7 +458,16 @@
                 }
             },
             menubar: 'favs file edit view insert format tools table',
-            content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }'
+            content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }',
+            setup: function (editor) {
+                editor.on('keyup', function () {
+                    updateWordCount(editor);
+                });
+
+                editor.on('init', function () {
+                    updateWordCount(editor);
+                });
+            }
         });
 
         // TinyMCE initialization function for both editors
@@ -368,7 +491,16 @@
                     }
                 },
                 menubar: 'favs file edit view insert format tools table',
-                content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }'
+                content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 16px; }',
+                setup: function (editor) {
+                    editor.on('keyup', function () {
+                        updateWordCount(editor);
+                    });
+
+                    editor.on('init', function () {
+                        updateWordCount(editor);
+                    });
+                }
             });
         }
 
@@ -393,9 +525,167 @@
     </script>
 
     <script>
+        function display_remain_letter(){
+            const titleInput = document.getElementById("title");
+            const titleCount = document.getElementById("title-count");
+            const maxTitleLength = 50;
+
+            titleInput.addEventListener("input", () => {
+                titleCount.textContent = `Remaining: ${maxTitleLength - titleInput.value.length}`;
+            });
+
+            const subtitleInput = document.getElementById("subtitle");
+            const subtitleCount = document.getElementById("sub-title-count");
+            const maxsubTitleLength = 100;
+
+            subtitleInput.addEventListener("input", () => {
+                subtitleCount.textContent = `Remaining: ${maxsubTitleLength - subtitleInput.value.length}`;
+            });
+        }
         document.addEventListener('DOMContentLoaded', () => {
+            display_remain_letter();
+
+            const today = new Date().toISOString().split("T")[0]; // Get YYYY-MM-DD format
+            document.getElementById("date").value = today; // Set input value
+
+            const steps = document.querySelectorAll('.step');
+            const nextBtn = document.querySelector('.next-btn');
+            const prevBtn = document.querySelector('.prev-btn');
+            const submitBtn = document.querySelector('.submit-btn');
+            const form = document.querySelector('#addBlogForm');
+
+            let currentStep = 0;
+
+            function updateStep(newStep) {
+                if (newStep >= steps.length || newStep < 0) return;
+                steps[currentStep].classList.remove("active");
+                setTimeout(() => {
+                    steps[currentStep].classList.add("d-none");
+                    // steps.forEach((step, index) => {
+                    //     step.classList.toggle('d-none', index !== currentStep);
+                    // });
+                    currentStep = newStep;
+                    steps[currentStep].classList.remove("d-none");
+
+                    setTimeout(() => {
+                        steps[currentStep].classList.add("active");
+                    }, 50); // Slight delay to trigger opacity transition
+                    prevBtn.classList.toggle('d-none', currentStep === 0);
+                    nextBtn.classList.toggle('d-none', currentStep === steps.length - 1);
+                    submitBtn.classList.toggle('d-none', currentStep !== steps.length - 1);
+                }, 300);
+
+                // if (currentStep === steps.length - 1) {
+                //     // Update confirmation details
+                //     document.getElementById('confirm-name').textContent = form.name.value;
+                //     document.getElementById('confirm-email').textContent = form.email.value;
+                //     document.getElementById('confirm-address').textContent = form.address.value;
+                //     document.getElementById('confirm-city').textContent = form.city.value;
+                // }
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentStep < steps.length - 1) {
+                    updateStep(currentStep+1);
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    updateStep(currentStep - 1);
+                }
+            });
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this); // Get form data
+
+                // Clear previous error messages
+                $('.invalid-feedback').text('');
+                $('.form-control').removeClass('is-invalid');
+                $('#all-error').hide();
+
+                $.ajax({
+                    url: '{{ route('blog.store') }}', // Replace with the correct route
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        // Success message or redirection
+
+                        if (response.success) {
+                            $('#addBlogModal').modal('hide'); // Close the modal
+                            toastr.success('Blog added successfully!');
+                            currentStep = 0;
+                            updateStep(currentStep);
+                            window.location.href = response.redirect_url; //
+                        }
+                    },
+                    error: function(xhr) {
+                        // If validation fails, show errors
+                        if (xhr.status === 422) { // Validation error
+                            var errors = xhr.responseJSON.errors;
+                            var error_fields = '';
+
+                            // Iterate through the errors and display them
+                            for (var field in errors) {
+                                // Handle category_name errors
+                                if (field === 'category_name') {
+                                    $('#category-error').addClass(
+                                    'is-invalid'); // Add invalid class to category_name
+                                    $('#category-error').text(errors[field][0]);
+                                    if (error_fields == ''){
+                                        error_fields += 'category';
+                                    } else {
+                                        error_fields += ', category';
+                                    }
+                                } else if (field === 'new_category') {
+                                    // Handle new_category errors
+                                    $('#' + field).addClass(
+                                    'is-invalid'); // Add invalid class to new_category
+                                    $('#new_category-error').text(errors[field][0]);
+
+                                    // If 'Other' is selected, show the input field for the new category
+                                    if ($('#category').val() === 'other') {
+                                        $('#newCategoryContainer')
+                                    .show(); // Show the new category input field
+                                    }
+                                } else if (field === 'blog_image') {
+                                    // Handle blog_image errors
+
+                                    $('#' + field).addClass(
+                                    'is-invalid'); // Add invalid class to blog_image
+                                    $('#' + field + '-error').text(errors[field][0]);
+                                } else {
+                                    $('#' + field).addClass(
+                                    'is-invalid'); // Add invalid class to blog_image
+                                    $('#' + field + '-error').text(errors[field][0]);
+
+                                    if (error_fields == ''){
+                                        error_fields += field;
+                                    } else {
+                                        error_fields += ', ' + field;
+                                    }
+                                }
+                            }
+
+                            if (error_fields != ''){
+                                $('#all-error').show();
+                                $('#all-error').text('There are input errors. Please check ' + error_fields + ' again');
+                            } else {
+                                $('#all-error').hide();
+                            }
+                        }
+                    }
+                });
+            });
+
+            updateStep(0);
+
+
             const editBlogModal = new bootstrap.Modal(document.getElementById('editBlogModal'));
-            
+
             document.querySelectorAll('.edit-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     const blogId = button.getAttribute('data-id');
@@ -404,7 +694,7 @@
                     const date = button.getAttribute('data-date');
                                 // Get the data-images attribute from the button
                     const imagesData = button.getAttribute('data-images');
-                    
+
                     // Parse the JSON string to a JavaScript object
                     const images = JSON.parse(imagesData);
                     const category = button.getAttribute('data-category');
@@ -413,7 +703,7 @@
                     const writtenBy = button.getAttribute('data-written-by');
                     const publisherbio = button.getAttribute('data-publisher-bio');
                     const pressLink = button.getAttribute('data-press-link');
-                    
+
                     // Populate the modal form fields
                     document.getElementById('editBlogId').value = blogId;
                     document.getElementById('editTitle').value = title;
@@ -436,7 +726,7 @@
                     const editBlogForm = document.getElementById('editBlogForm');
                     editBlogForm.action = `{{ route('blog.update', '') }}/${blogId}`;
                     // Set social links
-                    
+
 
                     const fileInput = document.querySelector('input[name="edit_blog_images[]"]');
                     const container = document.getElementById('edit-image-captions-container');
@@ -466,74 +756,6 @@
                     editBlogModal.show();
 
                 });
-            });            
-        });
-    </script>
-
-    <script>
-        $(document).ready(function() {
-            // Open the modal if validation errors exist
-            $('#addBlogForm').on('submit', function(e) {
-                e.preventDefault(); // Prevent normal form submission
-
-                var formData = new FormData(this); // Get form data
-
-                // Clear previous error messages
-                $('.invalid-feedback').text('');
-                $('.form-control').removeClass('is-invalid');
-
-                $.ajax({
-                    url: '{{ route('blog.store') }}', // Replace with the correct route
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        // Success message or redirection
-
-                        if (response.success) {
-                            $('#addBlogModal').modal('hide'); // Close the modal
-                            toastr.success('Blog added successfully!');
-                            window.location.href = response.redirect_url; //
-                        }
-                    },
-                    error: function(xhr) {
-                        // If validation fails, show errors
-                        if (xhr.status === 422) { // Validation error
-                            var errors = xhr.responseJSON.errors;
-
-                            // Iterate through the errors and display them
-                            for (var field in errors) {
-                                // Handle category_name errors
-                                if (field === 'category_name') {
-                                    $('#' + field).addClass(
-                                    'is-invalid'); // Add invalid class to category_name
-                                    $('#' + field + '-error').text(errors[field][0]);
-                                }
-
-                                // Handle new_category errors
-                                if (field === 'new_category') {
-                                    $('#' + field).addClass(
-                                    'is-invalid'); // Add invalid class to new_category
-                                    $('#' + field + '-error').text(errors[field][0]);
-
-                                    // If 'Other' is selected, show the input field for the new category
-                                    if ($('#category').val() === 'other') {
-                                        $('#newCategoryContainer')
-                                    .show(); // Show the new category input field
-                                    }
-                                }
-
-                                // Handle blog_image errors
-                                if (field === 'blog_image') {
-                                    $('#' + field).addClass(
-                                    'is-invalid'); // Add invalid class to blog_image
-                                    $('#' + field + '-error').text(errors[field][0]);
-                                }
-                            }
-                        }
-                    }
-                });
             });
         });
     </script>
@@ -555,7 +777,7 @@
                         // Create an image element
                         const img = document.createElement('img');
                         img.style.maxWidth = '100%'; // Responsive width
-                        img.style.height = '70%'; // Maintain aspect ratio
+                        img.style.height = 'auto'; // Maintain aspect ratio
                         img.style.marginBottom = '1px';
 
                         // Use FileReader to display the image
@@ -571,7 +793,7 @@
                         input.name = 'image_captions[]';
                         input.placeholder = `Enter caption for ${file.name}`;
                         input.className = 'form-control mt-2';
-                        input.required = true;
+                        // input.required = true;
 
                         // Append the image and input to the div
                         div.appendChild(img);
@@ -594,7 +816,7 @@
                     const title = this.dataset.title;
                                 // Get the data-images attribute from the button
                     const imagesData = button.getAttribute('data-images');
-                    
+
                     // Parse the JSON string to a JavaScript object
                     const images = JSON.parse(imagesData); // Assuming images array passed in dataset
 
@@ -680,32 +902,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            
+
             const fileInput = document.querySelector('input[name="edit_blog_images[]"]');
             const container = document.getElementById('edit-image-captions-container');
-    
+
             if (fileInput) {
                 fileInput.addEventListener('change', function () {
                     container.innerHTML = ''; // Clear previous content
-    
+
                     Array.from(this.files).forEach((file, index) => {
                         const div = document.createElement('div');
                         div.style.marginBottom = '15px';
-    
+
                         // Create an image element
                         const img = document.createElement('img');
                         img.style.maxWidth = '150px'; // Set a reasonable max width
                         img.style.maxHeight = '150px'; // Set a reasonable max height
                         img.style.display = 'block'; // Block to separate from caption
                         img.style.marginBottom = '10px';
-    
+
                         // Use FileReader to display the image
                         const reader = new FileReader();
                         reader.onload = function (e) {
                             img.src = e.target.result; // Set the src to the file's data URL
                         };
                         reader.readAsDataURL(file); // Read the file as a data URL
-    
+
                         // Create caption input field
                         const label = document.createElement('label');
                         // label.textContent = `Caption for ${file.name}`;
@@ -713,8 +935,8 @@
                         input.type = 'text';
                         input.name = 'image_captions[]';
                         input.placeholder = `Enter caption for ${file.name}`;
-                        input.required = true;
-    
+                        // input.required = true;
+
                         // Append the elements to the container
                         div.appendChild(img);
                         div.appendChild(label);
