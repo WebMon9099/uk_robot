@@ -37,7 +37,7 @@ class CheckAuthentication
         if (!in_array($user->user_type, [1, 0]) && $request->is($restrictedRoutes)) {
             return redirect()->route('login')->with('error', 'Unauthorized access.');
         }
-        if (!in_array($user->user_type, [0, 1, 3, 4, 5, 6, 7, 8])) {
+        if (!in_array($user->user_type, [0, 1, 3, 4, 5, 6, 7, 8, 9])) {
             Auth::logout();
             return redirect()->route('login')->with('error', 'Unauthorized access.');
         }
